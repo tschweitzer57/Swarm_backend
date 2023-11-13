@@ -2,10 +2,10 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>swarm_backend</name>
-  <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <version>0.0.1</version>
+  <description>cpp package displaying topics informations of trajectory of a swarm</description>
   <maintainer email="thibault.schweitzer@estaca.eu">root</maintainer>
-  <license>TODO: License declaration</license>
+  <license>CECILL-2.1</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
