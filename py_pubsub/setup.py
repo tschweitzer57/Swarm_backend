@@ -4,7 +4,7 @@ package_name = 'py_pubsub'
 
 setup(
     name=package_name,
-    version='0.0.0',
+    version='0.0.1',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/ament_index/resource_index/packages',
@@ -22,6 +22,8 @@ setup(
         'console_scripts': [
             'talker = py_pubsub.publisher_member_function:main',
             'listener = py_pubsub.subscriber_member_function:main',
+            'multitalker = py_pubsub.multipublisher_function:main',
+            'multilistener = py_pubsub.multisubscriber_function:main',
         ],
     },
 )
