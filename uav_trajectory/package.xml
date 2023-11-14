@@ -2,11 +2,14 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>uav_trajectory</name>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <description>Generates trajectories of an UAV swarm</description>
   <maintainer email="thibault.schweitzer@estaca.eu">root</maintainer>
   <license>CECILL-2.1</license>
 
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>tutorial_interfaces</exec_depend>
+  
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>

@@ -13,14 +13,16 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='root',
+    maintainer='SCHWEITZER',
     maintainer_email='thibault.schweitzer@estaca.eu',
     description='TODO: Package description',
-    license='TODO: License declaration',
+    license='CECILL-2.1',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'generate_trajectories = uav_trajectory.generate_trajectories:main'
+            'generate_trajectories = uav_trajectory.generate_trajectories:main',
+            'talker = uav_trajectory.publisher_member_function:main',
+            'listener = uav_trajectory.subscriber_member_function:main',
         ],
     },
 )
