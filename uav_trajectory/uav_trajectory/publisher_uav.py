@@ -6,6 +6,7 @@
 import rclpy
 import numpy as np
 from rclpy.node import Node
+import uav
 
 from uav_interfaces.msg import Groundtruth
 from uav_interfaces.msg import VIOmeasurement
@@ -75,6 +76,23 @@ class UavPublisher(Node):
 
 def main(args=None):
     rclpy.init(args=args)
+
+    # Generates trajectory for UAV A
+    uavA = UAV(initialPose=[0,0,0])
+    uavA.generate_3DoF_trajectory(diameter = 30)
+
+    # Generates trajectory for UAV B
+    uavB = UAV(initialPose=[40,0,0])
+    uavB.generate_3DoF_trajectory(diameter = 30)
+
+    # Generates trajectory for UAV C
+    uavC = UAV(initialPose=[0,40,0])
+    uavC.generate_3DoF_trajectory(diameter = 30)
+
+    # Generates trajectory for UAV D
+    uavD = UAV(initialPose=[40,40,0])
+    uavD.generate_3DoF_trajectory(diameter = 30)
+
 
     uav_publisher = UavPublisher()
 
