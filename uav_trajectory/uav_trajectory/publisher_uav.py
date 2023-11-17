@@ -32,15 +32,15 @@ class UavPublisher(Node):
 
         # Generates trajectory for UAV B
         self.uavB = UAV(initialPose=[40,0,0])
-        uavB.generate_3DoF_trajectory(diameter = 30)
+        self.uavB.generate_3DoF_trajectory(diameter = 30)
 
         # Generates trajectory for UAV C
-        uavC = UAV(initialPose=[0,40,0])
-        uavC.generate_3DoF_trajectory(diameter = 30)
+        self.uavC = UAV(initialPose=[0,40,0])
+        self.uavC.generate_3DoF_trajectory(diameter = 30)
 
         # Generates trajectory for UAV D
-        uavD = UAV(initialPose=[40,40,0])
-        uavD.generate_3DoF_trajectory(diameter = 30)
+        self.uavD = UAV(initialPose=[40,40,0])
+        self.uavD.generate_3DoF_trajectory(diameter = 30)
 
     def timer_callback(self):
         self.callback_gt()
