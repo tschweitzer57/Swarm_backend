@@ -23,6 +23,7 @@ setup(
             'generate_trajectories = uav_trajectory.generate_trajectories:main',
             'talker = uav_trajectory.publisher_member_function:main',
             'listener = uav_trajectory.subscriber_member_function:main',
+            'uavtalker = uav_trajectory.publisher_uav:main'
         ],
     },
 )
