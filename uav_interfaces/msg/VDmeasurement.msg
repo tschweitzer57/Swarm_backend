@@ -1,3 +1,3 @@
 uint32 frame_id
-String tag
+string tag
 float64[16] measure
