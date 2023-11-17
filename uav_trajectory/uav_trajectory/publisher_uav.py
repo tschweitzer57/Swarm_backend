@@ -27,19 +27,19 @@ class UavPublisher(Node):
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
         # Generates trajectory for UAV A
-        self.uavA = uavlib.UAV(initialPose=[0,0,0])
+        self.uavA = uav_trajectory.uavlib.UAV(initialPose=[0,0,0])
         self.uavA.generate_3DoF_trajectory(diameter = 30)
 
         # Generates trajectory for UAV B
-        self.uavB = uavlib.UAV(initialPose=[40,0,0])
+        self.uavB = uav_trajectory.uavlib.UAV(initialPose=[40,0,0])
         uavB.generate_3DoF_trajectory(diameter = 30)
 
         # Generates trajectory for UAV C
-        uavC = uavlib.UAV(initialPose=[0,40,0])
+        uavC = uav_trajectory.uavlib.UAV(initialPose=[0,40,0])
         uavC.generate_3DoF_trajectory(diameter = 30)
 
         # Generates trajectory for UAV D
-        uavD = uavlib.UAV(initialPose=[40,40,0])
+        uavD = uav_trajectory.uavlib.UAV(initialPose=[40,40,0])
         uavD.generate_3DoF_trajectory(diameter = 30)
 
     def timer_callback(self):
