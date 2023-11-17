@@ -70,7 +70,8 @@ class UavPublisher(Node):
     def callback_vio(self):
         msg = VIOmeasurement()
         msg.frame_id = self.i
-        msg.measure = np.reshape(self.uavA.z_VIO[self.i].T, (1,16))
+        print(np.reshape(self.uavA.z_VIO[self.i].T, (1,16)))
+        msg.measure = np.array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16])
         self.publisher_vio.publish(msg)
         self.get_logger().info('Publishing: VIO infos')
 
