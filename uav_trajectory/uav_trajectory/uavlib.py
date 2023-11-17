@@ -21,7 +21,7 @@ def quatRot(q):
     r21 = 2*qy*qz + 2*qx*qw
     r22 = 1 - 2*qx**2 - 2*qy**2
 
-    qRot = np.array([r00, r01, r02],[r10, r11, r12],[r20, r21, r22])
+    qRot = np.array([[r00, r01, r02],[r10, r11, r12],[r20, r21, r22]])
 
     return qRot
 
