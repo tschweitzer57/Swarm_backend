@@ -6,7 +6,7 @@
 import rclpy
 import numpy as np
 from rclpy.node import Node
-from uavlib import uav
+from uav_trajectory.uavlib import *
 
 from uav_interfaces.msg import Groundtruth
 # from uav_interfaces.msg import VIOmeasurement
