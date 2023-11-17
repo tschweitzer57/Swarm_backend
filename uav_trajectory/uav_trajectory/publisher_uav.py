@@ -70,7 +70,7 @@ class UavPublisher(Node):
     def callback_vio(self):
         msg = VIOmeasurement()
         msg.frame_id = self.i
-        data = np.reshape(self.uavA.z_VIO[self.i].T, (1,16))
+        data = np.reshape(self.uavA.z_VIO[self.i].T, (1,16))[0]
         print(type(data[0]))
         print(type(data[1]))
         print(type(data[2]))
