@@ -53,10 +53,10 @@ class UavPublisher(Node):
     def callback_gt(self):
         msg = Groundtruth()
         msg.frame_id = self.i
-        msg.x = uavC.groundtruth_x[self.i]
-        msg.y = uavC.groundtruth_y[self.i]
-        msg.z = uavC.groundtruth_z[self.i]
-        msg.psi = uavC.groundtruth_x[self.i]
+        msg.x = self.uavC.groundtruth_x[self.i]
+        msg.y = self.uavC.groundtruth_y[self.i]
+        msg.z = self.uavC.groundtruth_z[self.i]
+        msg.psi = self.uavC.groundtruth_x[self.i]
         self.publisher_gt.publish(msg)
         self.get_logger().info('Publishing: groundtruth infos')
 
