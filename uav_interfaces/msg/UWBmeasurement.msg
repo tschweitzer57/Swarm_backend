@@ -1,5 +1,5 @@
 uint32 frame_id
-float64 dist_B
-float64 dist_C
-float64 dist_D
+float64 dist_b
+float64 dist_c
+float64 dist_d
 
