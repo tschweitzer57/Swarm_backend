@@ -84,9 +84,9 @@ class UavPublisher(Node):
     def callback_uwb(self):
         msg = UWBmeasurement()
         msg.frame_id = self.i
-        msg.dist_B = self.uavA.z_UWB[self.i]["distance to B"]
-        msg.dist_C = self.uavA.z_UWB[self.i]["distance to C"]
-        msg.dist_D = self.uavA.z_UWB[self.i]["distance to D"]
+        msg.dist_b = self.uavA.z_UWB[self.i]["distance to B"]
+        msg.dist_c = self.uavA.z_UWB[self.i]["distance to C"]
+        msg.dist_d = self.uavA.z_UWB[self.i]["distance to D"]
         self.publisher_uwb.publish(msg)
         self.get_logger().info('Publishing: UWB infos')
 
