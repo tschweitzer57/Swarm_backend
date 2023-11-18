@@ -1,5 +1,13 @@
 uint32 frame_id
-uint32 closure_time
-string detected
-string received
-float64[16] measure
+uint32 lc_frame_akf
+uint32 lc_frame_bkf
+uint32 lc_frame_ckf
+uint32 lc_frame_dkf
+string lc_detected_akf
+string lc_detected_bkf
+string lc_detected_ckf
+string lc_detected_dkf
+float64[16] lc_measure_akf
+float64[16] lc_measure_bkf
+float64[16] lc_measure_ckf
+float64[16] lc_measure_dkf
