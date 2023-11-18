@@ -1,3 +1,5 @@
 uint32 frame_id
-string tag
-float64 measure
+float64 dist_B
+float64 dist_C
+float64 dist_D
+

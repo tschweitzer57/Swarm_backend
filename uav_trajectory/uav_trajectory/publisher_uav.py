@@ -10,7 +10,7 @@ from uav_trajectory.uavlib import *
 
 from uav_interfaces.msg import Groundtruth
 from uav_interfaces.msg import VIOmeasurement
-# from uav_interfaces.msg import UWBmeasurement
+from uav_interfaces.msg import UWBmeasurement
 # from uav_interfaces.msg import VDmeasurement
 # from uav_interfaces.msg import LCmeasurement
 
@@ -20,7 +20,7 @@ class UavPublisher(Node):
         super().__init__('uav_publisher')
         self.publisher_gt = self.create_publisher(Groundtruth,    'topic1', 10)
         self.publisher_vio = self.create_publisher(VIOmeasurement, 'topic2', 10)
-        # self.publisher_uwb = self.create_publisher(UWBmeasurement, 'topic3', 10)
+        self.publisher_uwb = self.create_publisher(UWBmeasurement, 'topic3', 10)
         # self.publisher_vd = self.create_publisher(VDmeasurement,  'topic4', 10)
         # self.publisher_lc = self.create_publisher(LCmeasurement,  'topic5', 10)
 
@@ -44,6 +44,13 @@ class UavPublisher(Node):
         self.uavC.generate_VIO(vio_noise)
         self.uavD.generate_VIO(vio_noise)
         
+        # generate UWB data for drones :
+        uwb_noise = 0.01
+        self.uavA.generate_UWB(self.uavB, self.uavC, self.uavD, uwb_noise)
+        self.uavB.generate_UWB(self.uavC, self.uavD, self.uavA, uwb_noise)
+        self.uavC.generate_UWB(self.uavD, self.uavA, self.uavB, uwb_noise)
+        self.uavD.generate_UWB(self.uavA, self.uavB, self.uavC, uwb_noise)
+        
         timer_period = 1  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
@@ -52,7 +59,7 @@ class UavPublisher(Node):
     def timer_callback(self):
         self.callback_gt()
         self.callback_vio()
-        # self.callback_uwb()
+        self.callback_uwb()
         # self.callback_vd()
         # self.callback_lc()
         self.i += 1
@@ -70,25 +77,18 @@ class UavPublisher(Node):
     def callback_vio(self):
         msg = VIOmeasurement()
         msg.frame_id = self.i
-        data = np.reshape(self.uavA.z_VIO[self.i].T, (1,16))[0]
-        print(type(data[0]))
-        print(type(data[1]))
-        print(type(data[2]))
-        print(type(data[3]))
-        print(type(data[4]))
-        print(type(data[5]))
-        print(type(data[6]))
-        print(type(data[7]))
-        msg.measure = np.array([data[0],2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0,13.0,14.0,15.0,16.0])
+        msg.measure = np.reshape(self.uavA.z_VIO[self.i].T, (1,16))[0]
         self.publisher_vio.publish(msg)
         self.get_logger().info('Publishing: VIO infos')
 
-    # def callback_uwb(self):
-        # msg = UWBmeasurement()
-        # msg.frame_id = self.i
-        # msg.measure = 58.45425
-        # self.publisher_uwb.publish(msg)
-        # self.get_logger().info('Publishing: UWB infos')
+    def callback_uwb(self):
+        msg = UWBmeasurement()
+        msg.frame_id = self.i
+        msg.dist_B = uavA.z_UWB[self.i]["distance to B"]
+        msg.dist_C = uavA.z_UWB[self.i]["distance to C"]
+        msg.dist_D = uavA.z_UWB[self.i]["distance to D"]
+        self.publisher_uwb.publish(msg)
+        self.get_logger().info('Publishing: UWB infos')
 
     # def callback_vd(self):
         # msg = VDmeasurement()
