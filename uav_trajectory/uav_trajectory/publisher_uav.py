@@ -141,7 +141,7 @@ class UavPublisher(Node):
             msg.detected_akf    = True
             msg.time_akf        = self.uavA.z_LC[self.i]['lc time AKF']
             msg.link_akf        = self.uavA.z_LC[self.i]['lc detected AKF']
-            msg.measure_akf     = self.uavA.z_LC[self.i]['lc measure AKF']
+            msg.measure_akf     = np.reshape(self.uavA.z_LC[self.i]['lc measure AKF'], (1,16))[0]
         else:
             msg.detected_akf    = False
             msg.time_akf        = 0
@@ -153,7 +153,7 @@ class UavPublisher(Node):
             msg.detected_bkf    = True
             msg.time_bkf        = self.uavA.z_LC[self.i]['lc time BKF']
             msg.link_bkf        = self.uavA.z_LC[self.i]['lc detected BKF']
-            msg.measure_bkf     = self.uavA.z_LC[self.i]['lc measure BKF']
+            msg.measure_bkf     = np.reshape(self.uavA.z_LC[self.i]['lc measure BKF'], (1,16))[0]
         else:
             msg.detected_bkf    = False
             msg.time_bkf        = 0
@@ -165,7 +165,7 @@ class UavPublisher(Node):
             msg.detected_ckf    = True
             msg.time_ckf        = self.uavA.z_LC[self.i]['lc time CKF']
             msg.link_ckf        = self.uavA.z_LC[self.i]['lc detected CKF']
-            msg.measure_ckf     = self.uavA.z_LC[self.i]['lc measure CKF']
+            msg.measure_ckf     = np.reshape(self.uavA.z_LC[self.i]['lc measure CKF'], (1,16))[0]
         else:
             msg.detected_ckf    = False
             msg.time_ckf        = 0
@@ -177,7 +177,7 @@ class UavPublisher(Node):
             msg.detected_dkf    = True
             msg.time_dkf        = self.uavA.z_LC[self.i]['lc time DKF']
             msg.link_dkf        = self.uavA.z_LC[self.i]['lc detected DKF']
-            msg.measure_dkf     = self.uavA.z_LC[self.i]['lc measure DKF']
+            msg.measure_dkf     = np.reshape(self.uavA.z_LC[self.i]['lc measure DKF'], (1,16))[0]
         else:
             msg.detected_dkf    = False
             msg.time_dkf        = 0
