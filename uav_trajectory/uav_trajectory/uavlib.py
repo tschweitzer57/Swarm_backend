@@ -63,7 +63,7 @@ def euler_norm(pointa, pointb):
     dist = np.sqrt((pointa[0] - pointb[0])**2 + (pointa[1] - pointb[1])**2 + (pointa[2] - pointb[2])**2)
     return dist
 
-def dcmEulerAngles(R):
+def dcm2EulerAngles(R):
   sy = math.sqrt(R[0,0] * R[0,0] +  R[1,0] * R[1,0])
   singular = sy < 1e-6
   if  not singular :
