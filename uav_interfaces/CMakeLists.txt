@@ -14,10 +14,10 @@ find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
 	"msg/Groundtruth.msg"
-	"msg/VIOmeasurement.msg"
-	"msg/VDmeasurement.msg"
-	"msg/UWBmeasurement.msg"
-	"msg/LCmeasurement.msg"
+	"msg/Viomeasurement.msg"
+	"msg/Vdmeasurement.msg"
+	"msg/Uwbmeasurement.msg"
+	"msg/Lcmeasurement.msg"
 )
 
 if(BUILD_TESTING)
