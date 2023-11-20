@@ -8,20 +8,20 @@ import numpy as np
 from rclpy.node import Node
 
 from uav_interfaces.msg import Groundtruth
-from uav_interfaces.msg import VIOmeasurement
-from uav_interfaces.msg import UWBmeasurement
-from uav_interfaces.msg import VDmeasurement
-from uav_interfaces.msg import LCmeasurement
+from uav_interfaces.msg import Viomeasurement
+from uav_interfaces.msg import Uwbmeasurement
+from uav_interfaces.msg import Vdmeasurement
+from uav_interfaces.msg import Lcmeasurement
 
 class UavPublisher(Node):
 
     def __init__(self):
         super().__init__('uav_publisher')
         self.publisher_gt = self.create_publisher(Groundtruth,    'topic1', 10)
-        self.publisher_vio = self.create_publisher(VIOmeasurement, 'topic2', 10)
-        self.publisher_uwb = self.create_publisher(UWBmeasurement, 'topic3', 10)
-        self.publisher_vd = self.create_publisher(VDmeasurement,  'topic4', 10)
-        self.publisher_lc = self.create_publisher(LCmeasurement,  'topic5', 10)
+        self.publisher_vio = self.create_publisher(Viomeasurement, 'topic2', 10)
+        self.publisher_uwb = self.create_publisher(Uwbmeasurement, 'topic3', 10)
+        self.publisher_vd = self.create_publisher(Vdmeasurement,  'topic4', 10)
+        self.publisher_lc = self.create_publisher(Lcmeasurement,  'topic5', 10)
         timer_period = 1  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
@@ -46,28 +46,28 @@ class UavPublisher(Node):
         self.get_logger().info('Publishing: groundtruth infos')
 
     def callback_vio(self):
-        msg = VIOmeasurement()
+        msg = Viomeasurement()
         msg.frame_id = self.i
         msg.measure = self.npdata
         self.publisher_vio.publish(msg)
         self.get_logger().info('Publishing: VIO infos')
 
     def callback_uwb(self):
-        msg = UWBmeasurement()
+        msg = Uwbmeasurement()
         msg.frame_id = self.i
         msg.measure = 58.45425
         self.publisher_uwb.publish(msg)
         self.get_logger().info('Publishing: UWB infos')
 
     def callback_vd(self):
-        msg = VDmeasurement()
+        msg = Vdmeasurement()
         msg.frame_id = self.i
         msg.measure = self.npdata
         self.publisher_vd.publish(msg)
         self.get_logger().info('Publishing: VD infos')
 
     def callback_lc(self):
-        msg = LCmeasurement()
+        msg = Lcmeasurement()
         msg.frame_id = self.i
         msg.measure = self.npdata
         self.publisher_lc.publish(msg)

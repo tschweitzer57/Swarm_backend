@@ -6,10 +6,10 @@ import rclpy
 from rclpy.node import Node
 
 from uav_interfaces.msg import Groundtruth
-from uav_interfaces.msg import VIOmeasurement
-from uav_interfaces.msg import UWBmeasurement
-from uav_interfaces.msg import VDmeasurement
-from uav_interfaces.msg import LCmeasurement
+from uav_interfaces.msg import Viomeasurement
+from uav_interfaces.msg import Uwbmeasurement
+from uav_interfaces.msg import Vdmeasurement
+from uav_interfaces.msg import Lcmeasurement
 
 class UavSubscriber(Node):
 
@@ -17,13 +17,13 @@ class UavSubscriber(Node):
         super().__init__('uav_subscriber')
         self.subscription_gt = self.create_subscription(Groundtruth,'topic1',self.listener_callback_gt,10)
         self.subscription_gt  # prevent unused variable warning
-        self.subscription_vio = self.create_subscription(VIOmeasurement,'topic2',self.listener_callback_vio,10)
+        self.subscription_vio = self.create_subscription(Viomeasurement,'topic2',self.listener_callback_vio,10)
         self.subscription_vio 
-        self.subscription_uwb = self.create_subscription(UWBmeasurement,'topic3',self.listener_callback_uwb,10)
+        self.subscription_uwb = self.create_subscription(Uwbmeasurement,'topic3',self.listener_callback_uwb,10)
         self.subscription_uwb 
-        self.subscription_vd = self.create_subscription(VDmeasurement,'topic4',self.listener_callback_vd,10)
+        self.subscription_vd = self.create_subscription(Vdmeasurement,'topic4',self.listener_callback_vd,10)
         self.subscription_vd 
-        self.subscription_lc = self.create_subscription(LCmeasurement,'topic5',self.listener_callback_lc,10)
+        self.subscription_lc = self.create_subscription(Lcmeasurement,'topic5',self.listener_callback_lc,10)
         self.subscription_lc
 
     def listener_callback_gt(self, msg):

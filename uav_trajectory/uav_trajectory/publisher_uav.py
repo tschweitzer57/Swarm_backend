@@ -9,20 +9,20 @@ from rclpy.node import Node
 from uav_trajectory.uavlib import *
 
 from uav_interfaces.msg import Groundtruth
-from uav_interfaces.msg import VIOmeasurement
-from uav_interfaces.msg import UWBmeasurement
-from uav_interfaces.msg import VDmeasurement
-from uav_interfaces.msg import LCmeasurement
+from uav_interfaces.msg import Viomeasurement
+from uav_interfaces.msg import Uwbmeasurement
+from uav_interfaces.msg import Vdmeasurement
+from uav_interfaces.msg import Lcmeasurement
 
 class UavPublisher(Node):
 
     def __init__(self):
         super().__init__('uav_publisher')
         self.publisher_gt = self.create_publisher(Groundtruth,    'topic1', 10)
-        self.publisher_vio = self.create_publisher(VIOmeasurement, 'topic2', 10)
-        self.publisher_uwb = self.create_publisher(UWBmeasurement, 'topic3', 10)
-        self.publisher_vd = self.create_publisher(VDmeasurement,  'topic4', 10)
-        self.publisher_lc = self.create_publisher(LCmeasurement,  'topic5', 10)
+        self.publisher_vio = self.create_publisher(Viomeasurement, 'topic2', 10)
+        self.publisher_uwb = self.create_publisher(Uwbmeasurement, 'topic3', 10)
+        self.publisher_vd = self.create_publisher(Vdmeasurement,  'topic4', 10)
+        self.publisher_lc = self.create_publisher(Lcmeasurement,  'topic5', 10)
 
         # Generates trajectory for UAV A
         self.uavA = UAV(initialPose=[0,0,0])
@@ -89,14 +89,14 @@ class UavPublisher(Node):
         self.get_logger().info('Publishing: groundtruth infos')
 
     def callback_vio(self):
-        msg = VIOmeasurement()
+        msg = Viomeasurement()
         msg.frame_id = self.i
         msg.measure = np.reshape(self.uavA.z_VIO[self.i].T, (1,16))[0]
         self.publisher_vio.publish(msg)
         self.get_logger().info('Publishing: VIO infos')
 
     def callback_uwb(self):
-        msg = UWBmeasurement()
+        msg = Uwbmeasurement()
         msg.frame_id = self.i
         msg.dist_b = self.uavA.z_UWB[self.i]["distance to B"]
         msg.dist_c = self.uavA.z_UWB[self.i]["distance to C"]
@@ -105,7 +105,7 @@ class UavPublisher(Node):
         self.get_logger().info('Publishing: UWB infos')
 
     def callback_vd(self):
-        msg = VDmeasurement()
+        msg = Vdmeasurement()
         msg.frame_id = self.i
         
         if(self.uavA.z_VD[self.i]["B detected"] is not None): # A->B
@@ -133,7 +133,7 @@ class UavPublisher(Node):
         self.get_logger().info('Publishing: VD infos')
 
     def callback_lc(self):
-        msg = LCmeasurement()
+        msg = Lcmeasurement()
         msg.frame_id = self.i
         
         #Loop closure detected for drone A Keyframe
