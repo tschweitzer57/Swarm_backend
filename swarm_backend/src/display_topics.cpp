@@ -34,7 +34,7 @@ class DualSubscriber : public rclcpp::Node
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::executors::MultiTreadedExecutor executor;
+  rclcpp::executors::MultiThreadedExecutor executor;
   auto node = rclcpp::Node::make_shared("DualSubscriber");
   executor.add_node(node);
   executor.spin();
