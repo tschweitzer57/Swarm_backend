@@ -1,4 +1,5 @@
 #include <memory>
+#include <thread>
 #include "rclcpp/rclcpp.hpp"
 #include "uav_interfaces/msg/uwbmeasurement.hpp"
 #include "uav_interfaces/msg/groundtruth.hpp"
@@ -11,15 +12,26 @@ class DualSubscriber : public rclcpp::Node
     DualSubscriber()
     : Node("dual_subscriber")
     {
-      subscription_1 = this->create_subscription<uav_interfaces::msg::Groundtruth>(
+      // Create subscriptions
+	  subscription1_ = this->create_subscription<uav_interfaces::msg::Groundtruth>(
       "topic1", 10, std::bind(&DualSubscriber::topic_callback_gt, this, _1));
 	  
-	  subscription_2 = this->create_subscription<uav_interfaces::msg::Uwbmeasurement>(
+	  subscription2_ = this->create_subscription<uav_interfaces::msg::Uwbmeasurement>(
       "topic2", 10, std::bind(&DualSubscriber::topic_callback_uwb, this, _1));
+	  
+	  // Start threads for each callback
+	  thread1_ = std::thread([this]() { spinThread(subscription1_); });
+	  thread2_ = std::thread([this]() { spinThread(subscription2_); });
+	  
     }
 
   private:
-    void topic_callback_gt(const uav_interfaces::msg::Groundtruth & msg) const
+    rclcpp::Subscription<uav_interfaces::msg::Groundtruth>::SharedPtr subscription1_;
+	rclcpp::Subscription<uav_interfaces::msg::Uwbmeasurement>::SharedPtr subscription2_;
+	std::thread thread1_;
+	std::thread thread2_;
+	
+	void topic_callback_gt(const uav_interfaces::msg::Groundtruth & msg) const
     {
       RCLCPP_INFO(this->get_logger(), "Frame: %d X: %f Y: %f Z:%f psi: %f", msg.frame_id, msg.x, msg.y, msg.z, msg.psi);
     }
@@ -27,16 +39,18 @@ class DualSubscriber : public rclcpp::Node
     {
       RCLCPP_INFO(this->get_logger(), "Frame: %d B:%f C:%f D:%f", msg.frame_id, msg.dist_b, msg.dist_c, msg.dist_d);
     }
-    rclcpp::Subscription<uav_interfaces::msg::Groundtruth>::SharedPtr subscription_1;
-	rclcpp::Subscription<uav_interfaces::msg::Uwbmeasurement>::SharedPtr subscription_2;
+	void spinThread(rclcpp::SubscriptionBase::SharedPtr sub) 
+	{
+	  rclcpp::spin(sub)
+	}
+    
 };
 
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  auto node = std::make_shared<DualSubscriber>();
   rclcpp::executors::MultiThreadedExecutor executor;
-
+  auto node = std::make_shared<DualSubscriber>();
   executor.add_node(node);
   executor.spin();
   rclcpp::shutdown();
