@@ -25,7 +25,7 @@ class DualSubscriber : public rclcpp::Node
     }
 	void topic_callback_uwb(const uav_interfaces::msg::Uwbmeasurement & msg) const
     {
-      RCLCPP_INFO(this->get_logger(), "Frame: B:%f C:%f D:%f", msg.frame_id, msg.dist_b, msg.dist_c, msg.dist_d);
+      RCLCPP_INFO(this->get_logger(), "Frame: %d B:%f C:%f D:%f", msg.frame_id, msg.dist_b, msg.dist_c, msg.dist_d);
     }
     rclcpp::Subscription<uav_interfaces::msg::Groundtruth>::SharedPtr subscription_1;
 	rclcpp::Subscription<uav_interfaces::msg::Uwbmeasurement>::SharedPtr subscription_2;
