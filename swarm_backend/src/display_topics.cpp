@@ -14,7 +14,7 @@ class DualSubscriber : public rclcpp::Node
       subscription_1 = this->create_subscription<uav_interfaces::msg::Groundtruth>(
       "topic1", 10, std::bind(&MinimalSubscriber::topic_callback_gt, this, _1));
 	  
-	  subscription_2 = this->create_subscription<uav_interfaces::msg::UWBmeasurement>(
+	  subscription_2 = this->create_subscription<uav_interfaces::msg::Uwbmeasurement>(
       "topic2", 10, std::bind(&MinimalSubscriber::topic_callback_uwb, this, _1));
     }
 
@@ -23,12 +23,12 @@ class DualSubscriber : public rclcpp::Node
     {
       RCLCPP_INFO(this->get_logger(), "Frame: %d X: %f Y: %f Z:%f psi: %f", msg.frame_id, msg.x, msg.y, msg.z, msg.psi);
     }
-	void topic_callback_uwb(const uav_interfaces::msg::UWBmeasurement & msg) const
+	void topic_callback_uwb(const uav_interfaces::msg::Uwbmeasurement & msg) const
     {
       RCLCPP_INFO(this->get_logger(), "Frame: B:%f C:%f D:%f", msg.frame_id, msg.dist_b, msg.dist_c, msg.dist_d);
     }
     rclcpp::Subscription<uav_interfaces::msg::Groundtruth>::SharedPtr subscription_1;
-	rclcpp::Subscription<uav_interfaces::msg::UWBmeasurement>::SharedPtr subscription_2;
+	rclcpp::Subscription<uav_interfaces::msg::Uwbmeasurement>::SharedPtr subscription_2;
 };
 
 int main(int argc, char * argv[])
