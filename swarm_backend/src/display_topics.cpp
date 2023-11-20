@@ -12,10 +12,10 @@ class DualSubscriber : public rclcpp::Node
     : Node("dual_subscriber")
     {
       subscription_1 = this->create_subscription<uav_interfaces::msg::Groundtruth>(
-      "topic1", 10, std::bind(&MinimalSubscriber::topic_callback_gt, this, _1));
+      "topic1", 10, std::bind(&DualSubscriber::topic_callback_gt, this, _1));
 	  
 	  subscription_2 = this->create_subscription<uav_interfaces::msg::Uwbmeasurement>(
-      "topic2", 10, std::bind(&MinimalSubscriber::topic_callback_uwb, this, _1));
+      "topic2", 10, std::bind(&DualSubscriber::topic_callback_uwb, this, _1));
     }
 
   private:
