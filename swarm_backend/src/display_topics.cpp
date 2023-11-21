@@ -50,11 +50,12 @@ int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
   
-  std::shared_ptr<UwbSubscriber> uwb_node = std::make_shared<UwbSubscriber>();
   std::shared_ptr<GroundtruthSubscriber> gt_node = std::make_shared<GroundtruthSubscriber>();
+  std::shared_ptr<UwbSubscriber> uwb_node = std::make_shared<UwbSubscriber>();
   
   rclcpp::executors::MultiThreadedExecutor executor;
   
+  executor.add_node(gt_node);
   executor.add_node(uwb_node);
   executor.spin();
   rclcpp::shutdown();
