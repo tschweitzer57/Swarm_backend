@@ -73,7 +73,7 @@ class VdSubscriber : public rclcpp::Node
     {
       // Create subscription for visual detection topic
 	  subscription_ = this->create_subscription<uav_interfaces::msg::Vdmeasurement>(
-      "topic1", 10, std::bind(&VdSubscriber::topic_callback_vd, this, _1));
+      "topic4", 10, std::bind(&VdSubscriber::topic_callback_vd, this, _1));
     }
 
   private:
@@ -92,7 +92,7 @@ class LcSubscriber : public rclcpp::Node
     {
       // Create subscription for loop closure topic
 	  subscription_ = this->create_subscription<uav_interfaces::msg::Lcmeasurement>(
-      "topic1", 10, std::bind(&LcSubscriber::topic_callback_lc, this, _1));
+      "topic5", 10, std::bind(&LcSubscriber::topic_callback_lc, this, _1));
     }
 
   private:
