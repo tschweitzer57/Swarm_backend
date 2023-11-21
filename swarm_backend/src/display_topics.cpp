@@ -4,7 +4,7 @@
 #include "uav_interfaces/msg/groundtruth.hpp"
 #include "uav_interfaces/msg/viomeasurement.hpp"
 #include "uav_interfaces/msg/uwbmeasurement.hpp"
-#include "uav_interfaces/msg/vcmeasurement.hpp"
+#include "uav_interfaces/msg/vdmeasurement.hpp"
 #include "uav_interfaces/msg/lcmeasurement.hpp"
 
 using std::placeholders::_1;
