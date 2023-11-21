@@ -56,7 +56,6 @@ int main(int argc, char * argv[])
   rclcpp::executors::MultiThreadedExecutor executor;
   
   executor.add_node(uwb_node);
-  executor.add_node(gt_node);
   executor.spin();
   rclcpp::shutdown();
   return 0;
