@@ -34,7 +34,7 @@ class UwbSubscriber : public rclcpp::Node
     {
       // Create subscription for uwb topic
 	  subscription_ = this->create_subscription<uav_interfaces::msg::Uwbmeasurement>(
-      "topic2", 10, std::bind(&UwbSubscriber::topic_callback_uwb, this, _1));
+      "topic3", 10, std::bind(&UwbSubscriber::topic_callback_uwb, this, _1));
     }
 
   private:
