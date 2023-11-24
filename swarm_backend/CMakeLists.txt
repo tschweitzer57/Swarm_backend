@@ -14,10 +14,14 @@ find_package(uav_interfaces REQUIRED)
 # find_package(<dependency> REQUIRED)
 
 add_executable(display src/display_topics.cpp)
+add_executable(uni_display src/swarm_localization.cpp)
+
 ament_target_dependencies(display rclcpp uav_interfaces)
+ament_target_dependencies(uni_display rclcpp uav_interfaces)
 
 install(TARGETS 
 		display
+		uni_display
 		DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
