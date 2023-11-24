@@ -42,41 +42,41 @@ class UavSubscriber : public rclcpp::Node
 	rclcpp::Subscription<uav_interfaces::msg::Vdmeasurement>::SharedPtr vd_sub_;
 	rclcpp::Subscription<uav_interfaces::msg::Lcmeasurement>::SharedPtr lc_sub_;
 	
-	bool gt_received_ = false;
-	bool vio_received_ = false;
+bool gt_received_ {false};
+	bool vio_received_ {false};
 	bool uwb_received_ {false};
 	bool vd_received_ {false};
 	bool lc_received_ {false};
 	
-	void topic_callback_gt(const uav_interfaces::msg::Groundtruth & msg) const
+	void topic_callback_gt(const uav_interfaces::msg::Groundtruth & msg)
     {
 		RCLCPP_INFO(this->get_logger(), "Frame: %d X: %f Y: %f Z:%f psi: %f", msg.frame_id, msg.x, msg.y, msg.z, msg.psi);
 		gt_received_ = true;
 		synch_topic();
     }
 	
-	void topic_callback_vio(const uav_interfaces::msg::Viomeasurement & msg) const
+	void topic_callback_vio(const uav_interfaces::msg::Viomeasurement & msg)
     {
 		RCLCPP_INFO(this->get_logger(), "Frame: %d data1: %f", msg.frame_id, msg.measure[1]);
 		vio_received_ = true;
 		synch_topic();
     }
 	
-	void topic_callback_uwb(const uav_interfaces::msg::Uwbmeasurement & msg) const
+	void topic_callback_uwb(const uav_interfaces::msg::Uwbmeasurement & msg)
     {
 		RCLCPP_INFO(this->get_logger(), "Frame: %d B:%f C:%f D:%f", msg.frame_id, msg.dist_b, msg.dist_c, msg.dist_d);
 		uwb_received_ = true;
 		synch_topic();
     }
 	
-	void topic_callback_vd(const uav_interfaces::msg::Vdmeasurement & msg) const
+	void topic_callback_vd(const uav_interfaces::msg::Vdmeasurement & msg)
     {
 		RCLCPP_INFO(this->get_logger(), "Frame: %d B detected:%d B measure:%f", msg.frame_id, msg.b_detected, msg.measure_b[1]);
 		vd_received_ = true;
 		synch_topic();
     }
 	
-	void topic_callback_lc(const uav_interfaces::msg::Lcmeasurement & msg) const
+	void topic_callback_lc(const uav_interfaces::msg::Lcmeasurement & msg)
     {
 		RCLCPP_INFO(this->get_logger(), "Frame:%d detected:%d time:%d link:%s measure:%f", msg.frame_id, msg.detected_akf, msg.time_akf, msg.link_akf.c_str(), msg.measure_akf[1]);
 		lc_received_ = true;
