@@ -42,8 +42,8 @@ class UavSubscriber : public rclcpp::Node
 	rclcpp::Subscription<uav_interfaces::msg::Vdmeasurement>::SharedPtr vd_sub_;
 	rclcpp::Subscription<uav_interfaces::msg::Lcmeasurement>::SharedPtr lc_sub_;
 	
-	bool gt_received_ {false};
-	bool vio_received_ {false};
+	bool gt_received_ = false;
+	bool vio_received_ = false;
 	bool uwb_received_ {false};
 	bool vd_received_ {false};
 	bool lc_received_ {false};
