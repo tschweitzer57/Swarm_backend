@@ -118,7 +118,7 @@ class UavSubscriber : public rclcpp::Node
 		// Set up the only cost function (also known as residual). This uses
 		// auto-differentiation to obtain the derivative (jacobian).
 		
-		problem_.AddResidualBlock(cost_function, nullptr, &x);
+		problem_.AddResidualBlock(cost_function_, nullptr, &x);
 		// Run the solver!
   
 		options_.minimizer_progress_to_stdout = true;
