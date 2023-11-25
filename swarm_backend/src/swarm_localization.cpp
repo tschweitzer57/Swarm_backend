@@ -53,11 +53,17 @@ class UavSubscriber : public rclcpp::Node
 	rclcpp::Subscription<uav_interfaces::msg::Vdmeasurement>::SharedPtr vd_sub_;
 	rclcpp::Subscription<uav_interfaces::msg::Lcmeasurement>::SharedPtr lc_sub_;
 	
-bool gt_received_ {false};
+	bool gt_received_ {false};
 	bool vio_received_ {false};
 	bool uwb_received_ {false};
 	bool vd_received_ {false};
 	bool lc_received_ {false};
+	
+	// Build the problem.
+	ceres::Problem problem_;
+	ceres::CostFunction* cost_function_ = new ceres::AutoDiffCostFunction<CostFunctor, 1, 1>(new CostFunctor);
+	ceres::Solver::Options options_;
+	ceres::Solver::Summary summary_;
 	
 	void topic_callback_gt(const uav_interfaces::msg::Groundtruth & msg)
     {
@@ -109,20 +115,16 @@ bool gt_received_ {false};
 		double x = 0.5;
 		const double initial_x = x;
   
-		// Build the problem.
-		ceres::Problem problem;
-  
 		// Set up the only cost function (also known as residual). This uses
 		// auto-differentiation to obtain the derivative (jacobian).
-		ceres::CostFunction* cost_function = new ceres::AutoDiffCostFunction<CostFunctor, 1, 1>(new CostFunctor);
-		problem.AddResidualBlock(cost_function, nullptr, &x);
+		
+		problem_.AddResidualBlock(cost_function, nullptr, &x);
 		// Run the solver!
   
-		ceres::Solver::Options options;
-		options.minimizer_progress_to_stdout = true;
-		ceres::Solver::Summary summary;
-		ceres::Solve(options, &problem, &summary);
-		std::cout << summary.BriefReport() << "\n";
+		options_.minimizer_progress_to_stdout = true;
+		
+		ceres::Solve(options_, &problem_, &summary_);
+		std::cout << summary_.BriefReport() << "\n";
 		std::cout << "x : " << initial_x << " -> " << x << "\n";
 		RCLCPP_INFO(this->get_logger(), "x : %f -> %f", initial_x, x);
 	}
