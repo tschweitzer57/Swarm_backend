@@ -9,6 +9,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(uav_interfaces REQUIRED)
+find_package(Ceres REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -16,8 +17,10 @@ find_package(uav_interfaces REQUIRED)
 add_executable(display src/display_topics.cpp)
 add_executable(uni_display src/swarm_localization.cpp)
 
+target_link_libraries(uni_display ${CERES_LIBRARIES})
+
 ament_target_dependencies(display rclcpp uav_interfaces)
-ament_target_dependencies(uni_display rclcpp uav_interfaces)
+ament_target_dependencies(uni_display rclcpp uav_interfaces Ceres)
 
 install(TARGETS 
 		display
