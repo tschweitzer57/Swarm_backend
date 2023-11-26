@@ -223,7 +223,7 @@ class UavSubscriber : public rclcpp::Node
 		lc_db_.emplace_back(msg.frame_id, msg.detected_akf, msg.detected_bkf, msg.detected_ckf, msg.detected_dkf,
 							msg.time_akf, msg.time_bkf, msg.time_ckf, msg.time_dkf,
 							msg.link_akf, msg.link_bkf, msg.link_ckf, msg.link_dkf,
-							lc_measure_akf, lc_measure_bkf, lc_measure_ckf, lc_measure_dkf)
+							lc_measure_akf, lc_measure_bkf, lc_measure_ckf, lc_measure_dkf);
 		
 		synch_topic();
     }
