@@ -72,7 +72,7 @@ struct LcData {
  	
 	LcData(int id, bool d_akf, bool d_bkf, bool d_ckf, bool d_dkf,
 	int t_akf, int t_bkf, int t_ckf, int t_dkf,
-	String l_akf, String l_bkf, String l_ckf, String l_dkf,
+	std::string l_akf, String l_bkf, String l_ckf, String l_dkf,
 	Matrix4d m_akf, Matrix4d m_bkf, Matrix4d m_ckf, Matrix4d m_dkf)
 		: frame_id(id), detection_akf(d_akf), detection_bkf(d_bkf), detection_ckf(d_ckf), detection_dkf(d_dkf),
 		time_akf(t_akf), time_bkf(t_bkf), time_ckf(t_ckf), time_dkf(t_dkf),
