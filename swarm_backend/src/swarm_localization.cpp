@@ -173,8 +173,8 @@ class UavSubscriber : public rclcpp::Node
 			//std::cout << summary_.BriefReport() << "\n";
 			//std::cout << "x : " << initial_x << " -> " << x << "\n";
 			RCLCPP_INFO(this->get_logger(), "x : %f -> %f", initial_x, x);
-			RCLCPP_INFO(this->get_logger(), "GT data vector size is : %d", gt_db_.size());
-			RCLCPP_INFO(this->get_logger(), "VIO data vector size is : %d", vio_db_.size());
+			RCLCPP_INFO(this->get_logger(), "GT data vector size is : %ld", gt_db_.size());
+			RCLCPP_INFO(this->get_logger(), "VIO data vector size is : %ld", vio_db_.size());
 		}
 	}
 };
