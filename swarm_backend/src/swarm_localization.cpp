@@ -112,11 +112,11 @@ class UavSubscriber : public rclcpp::Node
 		vio_received_ = true;
 		
 		int id = msg.frame_id;
-		Matrix4d vio_measure 
-		{msg.measure[0], msg.measure[1], msg.measure[2], msg.measure[3],
-		 msg.measure[4], msg.measure[5], msg.measure[6], msg.measure[7],
-		 msg.measure[8], msg.measure[9], msg.measure[10], msg.measure[11],
-		 msg.measure[12], msg.measure[13], msg.measure[14], msg.measure[15]};
+		Matrix4d vio_measure;
+		vio_measure << msg.measure[0], msg.measure[1], msg.measure[2], msg.measure[3],
+					   msg.measure[4], msg.measure[5], msg.measure[6], msg.measure[7],
+					   msg.measure[8], msg.measure[9], msg.measure[10], msg.measure[11],
+					   msg.measure[12], msg.measure[13], msg.measure[14], msg.measure[15];
 		
 		vio_db_.emplace_back(id, vio_measure);
 		
