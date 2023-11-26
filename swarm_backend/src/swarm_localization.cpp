@@ -31,16 +31,16 @@ struct CostFunctor {
 };
 
 struct GroundtruthData {
-    Vector4d pose;
     int frame_id;
+	Vector4d pose;
 
     GroundtruthData(int id, Vector4d vec)
         : frame_id(id), pose(vec) {}
 };
 
 struct VioData {
-	Matrix4d pose;
 	int frame_id;
+	Matrix4d pose;
 	
 	VioData(int id, Matrix4d mat)
 		: frame_id(id), pose(mat) {}
