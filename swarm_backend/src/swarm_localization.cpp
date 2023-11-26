@@ -67,7 +67,7 @@ struct LcData {
 	int frame_id;
 	bool detection_akf, detection_bkf, detection_ckf, detection_dkf;
 	int time_akf, time_bkf, time_ckf, time_dkf;
-	String link_akf, link_bkf, link_ckf, link_dkf;
+	std::String link_akf, link_bkf, link_ckf, link_dkf;
 	Matrix4d measure_akf, measure_bkf, measure_ckf, measure_dkf;
  	
 	LcData(int id, bool d_akf, bool d_bkf, bool d_ckf, bool d_dkf,
