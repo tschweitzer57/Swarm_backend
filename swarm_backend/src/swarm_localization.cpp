@@ -118,7 +118,7 @@ class UavSubscriber : public rclcpp::Node
 		 msg.measure[8], msg.measure[9], msg.measure[10], msg.measure[11],
 		 msg.measure[12], msg.measure[13], msg.measure[14], msg.measure[15]};
 		
-		vio_db_.emplace_back(id, vio_measure)
+		vio_db_.emplace_back(id, vio_measure);
 		
 		synch_topic();
     }
