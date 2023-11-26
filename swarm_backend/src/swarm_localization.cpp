@@ -163,7 +163,7 @@ class UavSubscriber : public rclcpp::Node
 		//RCLCPP_INFO(this->get_logger(), "Frame: %d B:%f C:%f D:%f", msg.frame_id, msg.dist_b, msg.dist_c, msg.dist_d);
 		uwb_received_ = true;
 		
-		uwb_db_.emplace_back(msg.frame_id, msg.dist_b, msg.dist_c, msg.dist_d)
+		uwb_db_.emplace_back(msg.frame_id, msg.dist_b, msg.dist_c, msg.dist_d);
 		
 		synch_topic();
     }
@@ -189,7 +189,7 @@ class UavSubscriber : public rclcpp::Node
 					    msg.measure_d[8], 	msg.measure_d[9], 	msg.measure_d[10], 	msg.measure_d[11],
 					    msg.measure_d[12], 	msg.measure_d[13], 	msg.measure_d[14], 	msg.measure_d[15];
 		
-		vd_db_.emplace_back(msg.frame_id, msg.b_detected, msg.c_detected, msg.d_detected, vd_measure_B, vd_measure_C, vd_measure_D)
+		vd_db_.emplace_back(msg.frame_id, msg.b_detected, msg.c_detected, msg.d_detected, vd_measure_B, vd_measure_C, vd_measure_D);
 		
 		synch_topic();
     }
@@ -220,7 +220,7 @@ class UavSubscriber : public rclcpp::Node
 							msg.measure_dkf[8], 	msg.measure_dkf[9], 	msg.measure_dkf[10], 	msg.measure_dkf[11],
 							msg.measure_dkf[12], 	msg.measure_dkf[13], 	msg.measure_dkf[14], 	msg.measure_dkf[15];
 		
-		lc_db_.emplace_back(msg.frame_id, msg.detected_akf, msg.detected_bkf, msg.detection_ckf, msg.detection_dkf,
+		lc_db_.emplace_back(msg.frame_id, msg.detected_akf, msg.detected_bkf, msg.detected_ckf, msg.detected_dkf,
 							msg.time_akf, msg.time_bkf, msg.time_ckf, msg.time_dkf,
 							msg.link_akf, msg.link_bkf, msg.link_ckf, msg.link_dkf,
 							lc_measure_akf, lc_measure_bkf, lc_measure_ckf, lc_measure_dkf)
