@@ -19,18 +19,13 @@
 using std::placeholders::_1;
 using namespace Eigen;
 
-    // Sleep for 1 second (simulating a periodic update)
-    //std::this_thread::sleep_for(std::chrono::seconds(1));
-	//std::chrono::system_clock::to_time_t(point.timestamp)
-    
-struct CostFunctor {
-  template <typename T>
-  bool operator()(const T* const x, T* residual) const {
-    residual[0] = 10.0 - x[0];
-    return true;
-  }
-};
+//#define DEBUG_OUTPUT_CERES
+//#define DEBUG_ROS_TOPICS
 
+// Sleep for 1 second (simulating a periodic update)
+//std::this_thread::sleep_for(std::chrono::seconds(1));
+//std::chrono::system_clock::to_time_t(point.timestamp)
+    
 struct GroundtruthData {
     int frame_id;
 	Vector4d pose;
@@ -38,7 +33,6 @@ struct GroundtruthData {
     GroundtruthData(int id, Vector4d vec)
         : frame_id(id), pose(vec) {}
 };
-
 struct VioData {
 	int frame_id;
 	Matrix4d pose;
@@ -46,7 +40,6 @@ struct VioData {
 	VioData(int id, Matrix4d mat)
 		: frame_id(id), pose(mat) {}
 };
-
 struct UwbData {
 	int frame_id;
 	double dist_B, dist_C, dist_D;
@@ -79,6 +72,28 @@ struct LcData {
 		link_akf(l_akf), link_bkf(l_bkf), link_ckf(l_ckf), link_dkf(l_dkf),
 		measure_akf(m_akf), measure_bkf(m_bkf), measure_ckf(m_ckf), measure_dkf(m_dkf) {}
 };
+
+struct SlidingWData {
+	int frame_id;
+	GroundtruthData gt_data;
+	VioData vio_data;
+	UwbData uwb_data;
+	VdData vd_data;
+	LcData lc_data;
+
+	SlidingWData(int id, GroundtruthData gt, VioData vio, UwbData uwb, VdData vd, LcData lc)
+		: frame_id(id), gt_data(gt), vio_data(vio), uwb_data(uwb), vd_data(vd), lc_data(lc) {}
+};
+
+struct CostFunctor {
+	template <typename T>
+	bool operator()(const T* const x, T* residual) const {
+		residual[0] = 10.0 - x[0];
+		return true;
+	}
+};
+
+
 
 class UavSubscriber : public rclcpp::Node
 {
@@ -118,12 +133,15 @@ class UavSubscriber : public rclcpp::Node
 	bool uwb_received_ {false};
 	bool vd_received_ {false};
 	bool lc_received_ {false};
+
+	int frame_id_ = 0;
 	
 	std::vector<GroundtruthData> gt_db_;
 	std::vector<VioData> vio_db_;
 	std::vector<UwbData> uwb_db_;
 	std::vector<VdData> vd_db_;
 	std::vector<LcData> lc_db_;
+	std::vector<SlidingWData> sw_db_;
 	
 	// Ceres variables
 	ceres::Problem problem_;
@@ -144,7 +162,10 @@ class UavSubscriber : public rclcpp::Node
 	
 	void topic_callback_vio(const uav_interfaces::msg::Viomeasurement & msg)
     {
-		//RCLCPP_INFO(this->get_logger(), "Frame: %d data1: %f", msg.frame_id, msg.measure[1]);
+#ifdef DEBUG_ROS_TOPICS
+		RCLCPP_INFO(this->get_logger(), "Frame: %d data1: %f", msg.frame_id, msg.measure[1]);
+#endif
+
 		vio_received_ = true;
 		
 		Matrix4d vio_measure;
@@ -160,7 +181,10 @@ class UavSubscriber : public rclcpp::Node
 	
 	void topic_callback_uwb(const uav_interfaces::msg::Uwbmeasurement & msg)
     {
-		//RCLCPP_INFO(this->get_logger(), "Frame: %d B:%f C:%f D:%f", msg.frame_id, msg.dist_b, msg.dist_c, msg.dist_d);
+#ifdef DEBUG_ROS_TOPICS
+		RCLCPP_INFO(this->get_logger(), "Frame: %d B:%f C:%f D:%f", msg.frame_id, msg.dist_b, msg.dist_c, msg.dist_d);
+#endif
+
 		uwb_received_ = true;
 		
 		uwb_db_.emplace_back(msg.frame_id, msg.dist_b, msg.dist_c, msg.dist_d);
@@ -170,7 +194,10 @@ class UavSubscriber : public rclcpp::Node
 	
 	void topic_callback_vd(const uav_interfaces::msg::Vdmeasurement & msg)
     {
-		//RCLCPP_INFO(this->get_logger(), "Frame: %d B detected:%d B measure:%f", msg.frame_id, msg.b_detected, msg.measure_b[1]);
+#ifdef DEBUG_ROS_TOPICS
+		RCLCPP_INFO(this->get_logger(), "Frame: %d B detected:%d B measure:%f", msg.frame_id, msg.b_detected, msg.measure_b[1]);
+#endif	
+		
 		vd_received_ = true;
 		
 		Matrix4d vd_measure_B, vd_measure_C, vd_measure_D;
@@ -196,7 +223,10 @@ class UavSubscriber : public rclcpp::Node
 	
 	void topic_callback_lc(const uav_interfaces::msg::Lcmeasurement & msg)
     {
-		//RCLCPP_INFO(this->get_logger(), "Frame:%d detected:%d time:%d link:%s measure:%f", msg.frame_id, msg.detected_akf, msg.time_akf, msg.link_akf.c_str(), msg.measure_akf[1]);
+#ifdef DEBUG_ROS_TOPICS
+		RCLCPP_INFO(this->get_logger(), "Frame:%d detected:%d time:%d link:%s measure:%f", msg.frame_id, msg.detected_akf, msg.time_akf, msg.link_akf.c_str(), msg.measure_akf[1]);
+#endif
+
 		lc_received_ = true;
 		
 		Matrix4d lc_measure_akf, lc_measure_bkf, lc_measure_ckf, lc_measure_dkf;
@@ -241,28 +271,44 @@ class UavSubscriber : public rclcpp::Node
 			uwb_received_ = false;
 			vd_received_ = false;
 			lc_received_ = false;
-			
-			double x = 0.5;
-			const double initial_x = x;
-	  
-			// Set up the only cost function (also known as residual). This uses
-			// auto-differentiation to obtain the derivative (jacobian).
-			
-			problem_.AddResidualBlock(cost_function_, nullptr, &x);
-			// Run the solver!
-	  
-			options_.minimizer_progress_to_stdout = true;
-			
-			ceres::Solve(options_, &problem_, &summary_);
-			//std::cout << summary_.BriefReport() << "\n";
-			//std::cout << "x : " << initial_x << " -> " << x << "\n";
-			RCLCPP_INFO(this->get_logger(), "x : %f -> %f", initial_x, x);
+
+			sw_db_.emplace_back(frame_id_, gt_db_[frame_id_], vio_db_[frame_id_], uwb_db_[frame_id_], vd_db_[frame_id_], lc_db_[frame_id_]);
+			frame_id_++;
+
 			RCLCPP_INFO(this->get_logger(), "GT data vector size is : %ld", gt_db_.size());
 			RCLCPP_INFO(this->get_logger(), "VIO data vector size is : %ld", vio_db_.size());
 			RCLCPP_INFO(this->get_logger(), "UWB data vector size is : %ld", uwb_db_.size());
 			RCLCPP_INFO(this->get_logger(), "VD data vector size is : %ld", vd_db_.size());
 			RCLCPP_INFO(this->get_logger(), "LC data vector size is : %ld", lc_db_.size());
+
+			if (sw_db_.size() >= 100)
+			{
+				optimize();
+			}
 		}
+	}
+
+	void optimize()
+	{
+		double x = 0.5;
+		const double initial_x = x;
+
+		options_.max_num_iterations = 1000;
+		options_.linear_solver_type = SPARSE_NORMAL_CHOLESKY;
+		options_.trust_region_strategy_type = ceres::DOGLEG;
+
+		problem_.AddResidualBlock(cost_function_, nullptr, &x);
+		// Run the solver!
+
+		options_.minimizer_progress_to_stdout = true;
+
+		ceres::Solve(options_, &problem_, &summary_);
+		//std::cout << summary_.BriefReport() << "\n";
+		//std::cout << "x : " << initial_x << " -> " << x << "\n";
+
+#ifdef DEBUG_OUTPUT_CERES
+		RCLCPP_INFO(this->get_logger(), "x : %f -> %f", initial_x, x);
+#endif
 	}
 };
 
