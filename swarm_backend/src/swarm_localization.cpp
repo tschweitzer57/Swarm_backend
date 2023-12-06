@@ -93,6 +93,172 @@ struct CostFunctor {
 	}
 };
 
+struct DistanceFactor {
+	double distance_measurement;
+	//double distance_sqrt_inf;
+	DistanceFactor(double _distance_measurement) :
+		distance_measurement(_distance_measurement) {}
+
+public:
+	template<typename T>
+	bool operator()(const T* const _pose_a, const T* const _pose_b, T* _residual) const {
+		Eigen::Map<const Eigen::Matrix<T, 3, 1>> X_a(_pose_a);
+		Eigen::Map<const Eigen::Matrix<T, 3, 1>> X_b(_pose_b);
+		_residual[0] = ((X_a - X_b).norm() - distance_measurement);
+		return true;
+	}
+
+	static ceres::CostFunction* Create(double _distance_measurement) {
+		// std::cout << "Loop" << "sqrt_inf\n" << loop->get_sqrt_information_4d() << std::endl;
+		return new ceres::AutoDiffCostFunction<DistanceFactor, 1, 4, 4>(new DistanceFactor(_distance_measurement));
+	}
+};
+
+class RelativePoseFactor4d {
+	Swarm::Pose relative_pose;
+	Eigen::Vector4d relative_pose_4d;
+	Eigen::Matrix4d sqrt_inf;
+	RelativePoseFactor4d(const Swarm::Pose& _relative_pose, const Eigen::Matrix4d& _sqrt_inf) :
+		relative_pose(_relative_pose), sqrt_inf(_sqrt_inf)
+	{
+		relative_pose.to_vector_xyzyaw(relative_pose_4d.data());
+	}
+
+public:
+	template<typename T>
+	bool operator()(const T* const p_a_ptr, const T* const p_b_ptr, T* _residual) const {
+		Eigen::Map<const Eigen::Matrix<T, 4, 4>> pose_a(p_a_ptr);
+		Eigen::Map<const Eigen::Matrix<T, 4, 4>> pose_b(p_b_ptr);
+		Eigen::Matrix<T, 4, 1> relpose_est;
+		const Eigen::Matrix<T, 4, 1> _relative_pose_4d = relative_pose_4d.template cast<T>();
+		const Eigen::Matrix<T, 4, 4> _sqrt_inf = sqrt_inf.template cast<T>();
+		DeltaPose(pose_a.data(), pose_b.data(), relpose_est.data());
+		pose_error_4d(relpose_est, _relative_pose_4d, _sqrt_inf, _residual);
+		return true;
+	}
+
+	static ceres::CostFunction* Create(const Swarm::Pose& _relative_pose, const Eigen::Matrix4d& _sqrt_inf) {
+		return new ceres::AutoDiffCostFunction<RelativePoseFactor4d, 4, 4, 4>(
+			new RelativePoseFactor4d(_relative_pose, _sqrt_inf));
+	}
+
+	static ceres::CostFunction* CreateCov6d(const Swarm::Pose& _relative_pose, const Eigen::Matrix6d& cov) {
+		Matrix4d cov4d = Matrix4d::Zero();
+		cov4d.block<3, 3>(0, 0) = cov.block<3, 3>(0, 0);
+		cov4d(3, 3) = cov(5, 5);
+		auto _sqrt_inf_4d = cov4d.inverse().cwiseAbs().cwiseSqrt();;
+		// std::cout << "Odom" << "sqrt_inf\n" << _sqrt_inf_4d << std::endl;
+		return new ceres::AutoDiffCostFunction<RelativePoseFactor4d, 4, 4, 4>(
+			new RelativePoseFactor4d(_relative_pose, _sqrt_inf_4d));
+	}
+
+	static ceres::CostFunction* Create(const Swarm::GeneralMeasurement2Drones* _loc) {
+		auto loop = static_cast<const Swarm::LoopEdge*>(_loc);
+		// std::cout << "Loop" << "sqrt_inf\n" << loop->get_sqrt_information_4d() << std::endl;
+		return new ceres::AutoDiffCostFunction<RelativePoseFactor4d, 4, 4, 4>(
+			new RelativePoseFactor4d(loop->relative_pose, loop->get_sqrt_information_4d()));
+	}
+};
+
+class DroneDetection4dFactor {
+	bool enable_depth;
+	Swarm::DroneDetection det;
+	bool enable_dpose;
+	Eigen::Vector3d dir;
+	double inv_dep;
+	double dep;
+	bool use_inv_dep = true;
+
+	Eigen::Vector4d dposea, dposeb;
+	bool enable_dpose_b = false;
+	DroneDetection4dFactor(const Swarm::DroneDetection& _det) : det(_det) {
+		enable_depth = det.enable_depth;
+		enable_dpose = det.enable_dpose;
+		dir = det.p;
+		inv_dep = det.inv_dep;
+		dep = 1 / inv_dep;
+
+		if (enable_dpose) {
+			det.dpose_self_a.to_vector_xyzyaw(dposea.data());
+			det.dpose_self_b.to_vector_xyzyaw(dposeb.data());
+		}
+
+		// ROS_INFO("[SWARM_LOCAL](DetectionFactor) Detection %d->%d@%ld enable_depth %d inv_dep %d dir [%+3.2f, %+3.2f, %+3.2f] enable_dpose %d dposea %s dposeb %s", 
+		//     _det.id_a, _det.id_b, TSShort(_det.ts_a), enable_depth, use_inv_dep,
+		//     dir.x(), dir.y(), dir.z(), 
+		//     enable_dpose, det.dpose_self_a.tostr().c_str(), det.dpose_self_b.tostr().c_str());
+	}
+
+public:
+	template<typename T>
+	bool operator()(const T* const p_a_ptr, const T* const p_b_ptr, T* _residual) const {
+		Eigen::Matrix<T, 3, 1> relpose_est;
+
+		Eigen::Map<const Eigen::Matrix<T, 4, 1>> pose_a(p_a_ptr);
+		Eigen::Map<const Eigen::Matrix<T, 4, 1>> pose_b(p_b_ptr);
+
+		if (enable_dpose) {
+			Eigen::Matrix<T, 4, 1> _pose_a;
+			Eigen::Matrix<T, 4, 1> _pose_b;
+			const Eigen::Matrix<T, 4, 1> _dposea = dposea.template cast<T>();
+			PoseMulti(pose_a.data(), _dposea.data(), _pose_a.data());
+			const Eigen::Matrix<T, 4, 1> _dposeb = dposeb.template cast<T>();
+			PoseMulti(pose_b.data(), _dposeb.data(), _pose_b.data());
+			DeltaPose_Naive(_pose_a.data(), _pose_b.data(), relpose_est.data());
+		}
+		else {
+			Eigen::Matrix<T, 4, 1> _pose_a = pose_a;
+			_pose_a(2) = _pose_a(2) + T(det.extrinsic.pos().z()); //Not accurate
+			DeltaPose_Naive(_pose_a.data(), pose_b.data(), relpose_est.data());
+		}
+
+
+		Eigen::Matrix<T, 3, 1> rel_p = dir.template cast<T>();
+
+		const double* tan_base = det.detect_tan_base.data();
+
+		if (enable_depth) {
+			if (use_inv_dep) {
+				T inv_dep = (T)(this->inv_dep);
+				unit_position_error_inv_dep(relpose_est.data(), rel_p.data(), inv_dep, tan_base, _residual);
+			}
+			else {
+				T dep = (T)(this->dep);
+				unit_position_error(relpose_est.data(), rel_p.data(), dep, tan_base, _residual);
+			}
+		}
+		else {
+			// std::cout << "relpose_est normed" << relpose_est.transpose()/relpose_est.norm() << "rel_p" << rel_p.transpose() << std::endl;
+			unit_position_error(relpose_est.data(), rel_p.data(), tan_base, _residual);
+		}
+
+		return true;
+	}
+
+
+	static ceres::CostFunction* Create(const Swarm::GeneralMeasurement2Drones* _loc) {
+		auto det = static_cast<const Swarm::DroneDetection*>(_loc);
+		// std::cout << "Loop" << "sqrt_inf\n" << loop->get_sqrt_information_4d() << std::endl;
+		int res_count = 2;
+		if (det->enable_depth) {
+			res_count = 3;
+		}
+
+		return new ceres::AutoDiffCostFunction<DroneDetection4dFactor, ceres::DYNAMIC, 4, 4>(
+			new DroneDetection4dFactor(*det), res_count);
+	}
+
+	static ceres::CostFunction* Create(const Swarm::DroneDetection& _det) {
+		// std::cout << "Loop" << "sqrt_inf\n" << loop->get_sqrt_information_4d() << std::endl;
+		int res_count = 2;
+		if (_det.enable_depth) {
+			res_count = 3;
+		}
+		return new ceres::AutoDiffCostFunction<DroneDetection4dFactor, ceres::DYNAMIC, 4, 4>(
+			new DroneDetection4dFactor(_det), res_count);
+	}
+};
+
 
 
 class UavSubscriber : public rclcpp::Node
@@ -294,7 +460,7 @@ class UavSubscriber : public rclcpp::Node
 		const double initial_x = x;
 
 		options_.max_num_iterations = 1000;
-		options_.linear_solver_type = SPARSE_NORMAL_CHOLESKY;
+		options_.linear_solver_type = ceres::SPARSE_NORMAL_CHOLESKY;
 		options_.trust_region_strategy_type = ceres::DOGLEG;
 
 		problem_.AddResidualBlock(cost_function_, nullptr, &x);
